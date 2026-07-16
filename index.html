@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GrantFit — which funding actually fits you?</title>
+<meta name="description" content="GrantFit scores seven funding channels — federal grants, SBIR, state programs, foundations, corporate giving, SBA/CDFI lending, crowdfunding — against your organization and tells you where your odds are real. Free, in your browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230d1117'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23fb923c' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='3.4' fill='%23eab308'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#0d1117">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+const GA_ID="";
+if(GA_ID){const s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id='+GA_ID;document.head.appendChild(s);window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config',GA_ID);}
+</script>
+<style>
+:root{--bg:#0d1117;--panel:#11161d;--card:#161d26;--line:#232f3d;--ink:#e9eef4;--dim:#96a6b6;--faint:#5e7080;
+--orange:#fb923c;--gold:#eab308;--green:#34d399;--sky:#38bdf8;--bad:#f87171}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;font-size:14.5px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--sky)}
+header{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(13,17,23,.92);backdrop-filter:blur(8px);z-index:50}
+#logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17px;letter-spacing:-.01em}
+#logo b{color:var(--orange)}
+.hsp{flex:1}
+.pill{font-size:12px;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:6px 13px;color:var(--dim);background:var(--card);cursor:pointer}
+.pill.pro{background:linear-gradient(90deg,#fb923c,#f59e0b);color:#221203;border:none;font-weight:700}
+.pill.prodone{background:var(--card);color:var(--orange);border:1px solid var(--orange)}
+.tagline{background:linear-gradient(120deg,rgba(251,146,60,.09),rgba(234,179,8,.06));border-bottom:1px solid var(--line);padding:18px 16px;text-align:center}
+.tagline h1{font-family:Fraunces,serif;font-size:clamp(20px,3.4vw,28px)}
+.tagline h1 em{font-style:italic;color:var(--orange)}
+.tagline p{color:var(--dim);font-size:13.5px;margin:6px auto 0;max-width:76ch}
+/* flow strip */
+.flow{display:flex;align-items:stretch;gap:0;max-width:980px;margin:14px auto 0;padding:0 16px}
+.flow .fstep{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 13px;text-align:left;display:flex;gap:10px;align-items:flex-start;min-width:0}
+.flow .fn{width:24px;height:24px;border-radius:50%;background:var(--orange);color:#221203;font-weight:800;font-size:12.5px;display:grid;place-items:center;flex-shrink:0;margin-top:1px}
+.flow .ft b{display:block;font-size:12.5px;color:var(--ink)}
+.flow .ft span{font-size:11.5px;color:var(--dim);line-height:1.45}
+.flow .farrow{align-self:center;color:var(--faint);font-size:17px;padding:0 7px;flex-shrink:0}
+@media(max-width:700px){.flow{flex-direction:column;gap:6px}.flow .farrow{transform:rotate(90deg);align-self:center;padding:0}}
+#app{display:grid;grid-template-columns:390px 1fr;gap:22px;max-width:1180px;margin:22px auto 60px;padding:0 16px}
+@media(max-width:900px){#app{grid-template-columns:1fr}}
+#inputs{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;height:fit-content}
+.lbl{display:block;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);margin:16px 0 7px}
+.lbl:first-of-type{margin-top:0}
+.tin{width:100%;background:var(--card);border:1px solid var(--line);border-radius:9px;color:var(--ink);padding:10px 12px;font-size:14px;font-family:inherit}
+.tin:focus{outline:none;border-color:var(--orange)}
+.segrow{display:flex;gap:7px;flex-wrap:wrap}
+.seg{border:1px solid var(--line);background:var(--card);color:var(--dim);border-radius:9px;padding:8px 12px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.seg.on{border-color:var(--orange);color:var(--orange);background:rgba(251,146,60,.08)}
+.mini{font-size:11.5px;color:var(--faint);margin-top:4px}
+#runBtn{width:100%;margin-top:18px;border:none;border-radius:11px;padding:13px;font-weight:800;font-size:14.5px;background:var(--orange);color:#221203;cursor:pointer;font-family:inherit}
+#runBtn:hover{filter:brightness(1.08)}
+.exbtn{width:100%;border:1px dashed var(--orange);background:rgba(251,146,60,.07);color:var(--orange);border-radius:10px;padding:10px;font-weight:700;font-size:13px;cursor:pointer;margin-bottom:14px;font-family:inherit}
+.exbtn:hover{background:rgba(251,146,60,.14)}
+.exbanner{display:none;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.35);border-radius:10px;padding:9px 12px;font-size:12.5px;color:var(--dim);margin-bottom:14px}
+.exbanner b{color:var(--green)}
+/* output */
+.verdict{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--orange);border-radius:12px;padding:16px 18px;margin-bottom:16px}
+.verdict .vbig{font-size:30px;line-height:1}
+.verdict h3{font-size:15px;margin-bottom:3px}
+.verdict p{font-size:13px;color:var(--dim)}
+.chan{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:12px}
+.chan .ch-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.chan .ch-e{font-size:19px}
+.chan h4{font-size:15px;flex:1;min-width:160px}
+.chan .score{font-family:Fraunces,serif;font-size:20px;font-weight:700;color:var(--orange)}
+.chan .bar{height:7px;border-radius:99px;background:var(--panel);margin:9px 0 11px;overflow:hidden}
+.chan .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--orange))}
+.chan ul{list-style:none;font-size:13px;color:var(--dim)}
+.chan ul li{position:relative;padding-left:17px;margin:5px 0}
+.chan ul li:before{content:"";position:absolute;left:2px;top:8px;width:6px;height:6px;border-radius:2px;background:var(--orange)}
+.chan .watch{font-size:12.5px;color:var(--gold);margin-top:8px}
+.chan .play{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 12px;font-size:12.5px;color:var(--dim);margin-top:9px}
+.chan .play b{color:var(--ink)}
+.lockedsec{background:rgba(234,179,8,.06);border:1px dashed rgba(234,179,8,.4);border-radius:11px;padding:13px 15px;font-size:13px;color:var(--dim);margin-bottom:16px}
+.lockedsec b{color:var(--gold)}
+.lockbtn{display:inline-block;border:none;border-radius:9px;background:var(--gold);color:#221a03;font-weight:700;font-size:12.5px;padding:8px 14px;cursor:pointer;font-family:inherit;text-decoration:none;margin-top:8px}
+.rowbtns{display:flex;gap:9px;flex-wrap:wrap;margin-top:4px}
+.smallbtn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:9px;padding:9px 14px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit}
+.cta-neso{display:flex;gap:13px;align-items:center;background:linear-gradient(120deg,rgba(251,146,60,.08),rgba(234,179,8,.06));border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-top:16px;flex-wrap:wrap}
+.cta-neso p{font-size:13px;color:var(--dim);flex:1;min-width:220px}
+.cta-neso b{color:var(--ink)}
+.cta-neso a{background:var(--orange);color:#221203;font-weight:700;font-size:13px;border-radius:999px;padding:10px 17px;text-decoration:none}
+.checklist{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:16px}
+.checklist h4{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--orange);margin-bottom:11px}
+.checklist label{display:flex;gap:9px;align-items:flex-start;font-size:13px;color:var(--dim);padding:6px 0;cursor:pointer}
+.checklist input{margin-top:3px;accent-color:var(--orange)}
+footer{border-top:1px solid var(--line);padding:20px 18px;font-size:12px;color:var(--faint);text-align:center;line-height:1.7}
+#modal{position:fixed;inset:0;background:rgba(5,8,12,.7);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:80;padding:18px}
+#modal.on{display:flex}
+#mcard{background:var(--panel);border:1px solid var(--line);border-radius:16px;max-width:460px;width:100%;padding:22px;position:relative;max-height:86vh;overflow:auto}
+#mcard h2{font-family:Fraunces,serif;font-size:20px;margin-bottom:10px}
+.closex{position:absolute;top:10px;right:14px;border:none;background:none;color:var(--dim);font-size:22px;cursor:pointer}
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(90px);background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:11px 20px;font-size:13.5px;font-weight:600;z-index:90;transition:transform .25s}
+#toast.on{transform:translateX(-50%) translateY(0)}
+/* tour */
+.tourhl{outline:2px solid var(--orange);outline-offset:3px;border-radius:10px;transition:outline .2s}
+#tourCard{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(140%);width:min(440px,92vw);background:var(--card);border:1px solid var(--orange);border-radius:14px;padding:15px 17px;z-index:95;box-shadow:0 18px 50px -12px rgba(0,0,0,.6);transition:transform .3s}
+#tourCard.on{transform:translateX(-50%) translateY(0)}
+#tourCard .tstep{font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--orange);text-transform:uppercase}
+#tourCard .ttext{font-size:13.5px;color:var(--ink);margin:5px 0 12px;line-height:1.5}
+#tourCard .tbtns{display:flex;gap:8px;justify-content:flex-end}
+#tourCard .tbtns button{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit}
+#tourCard .tbtns button.pri{background:var(--orange);border-color:var(--orange);color:#221203}
+@media print{
+ header,.tagline,.flow,#inputs,.rowbtns,.lockedsec,.cta-neso,footer,#toast,#modal,#tourCard,.exbtn,.exbanner{display:none!important}
+ body{background:#fff;color:#000}
+ #app{display:block}
+ .chan,.verdict,.checklist{border-color:#ccc;break-inside:avoid;background:#fff}
+ .chan h4,.verdict h3{color:#000}
+}
+</style>
+</head>
+<body>
+<header>
+  <div id="logo"><svg width="25" height="25" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10" fill="none" stroke="#fb923c" stroke-width="2.6"/><circle cx="16" cy="16" r="3.6" fill="#eab308"/></svg> Grant<b>Fit</b></div>
+  <div class="hsp"></div>
+  <button class="pill" id="tourBtn" title="Replay the 60-second tour">&#127891; Tour</button>
+  <button class="pill pro" id="proBtn">Go Pro</button>
+</header>
+
+<div class="tagline">
+  <h1>Which funding <em>actually fits you?</em></h1>
+  <p>Most funding searches fail before they start &mdash; chasing grants that never fund that kind of organization, or that kind of expense. Answer six questions and GrantFit scores seven funding channels against your reality, tells you where your odds are real, and what to do first.</p>
+</div>
+
+<div class="flow" aria-label="How GrantFit works">
+  <div class="fstep"><div class="fn">1</div><div class="ft"><b>Describe your organization</b><span>Type, age, and what you need the money for &mdash; six taps, no typing required.</span></div></div>
+  <div class="farrow">&rarr;</div>
+  <div class="fstep"><div class="fn">2</div><div class="ft"><b>Get your fit scores</b><span>Seven channels &mdash; federal, state, foundations, SBIR, corporate, lending, community &mdash; ranked for you.</span></div></div>
+  <div class="farrow">&rarr;</div>
+  <div class="fstep"><div class="fn">3</div><div class="ft"><b>Work the top channels</b><span>Why each fits, what to watch out for, and the first moves &mdash; then go find live postings.</span></div></div>
+</div>
+
+<div id="app">
+  <div id="inputs">
+    <button class="exbtn" id="exBtn">&#9654; Load an example &mdash; see a finished fit read first</button>
+    <div class="exbanner" id="exBanner"><b>Pawtucket Makers Alliance</b> &mdash; a two-year-old Rhode Island nonprofit seeking $25k&ndash;$100k for workforce programs. See where its real odds are &mdash; then tap your own answers; they replace it instantly.</div>
+
+    <label class="lbl">What kind of organization?</label>
+    <div class="segrow" id="orgRow"></div>
+
+    <label class="lbl">What's the funding for?</label>
+    <div class="segrow" id="useRow"></div>
+
+    <label class="lbl">How much do you need?</label>
+    <div class="segrow" id="amtRow"></div>
+
+    <label class="lbl">How established are you?</label>
+    <div class="segrow" id="ageRow"></div>
+
+    <label class="lbl">Where are you?</label>
+    <div style="display:grid;grid-template-columns:90px 1fr;gap:10px">
+      <input class="tin" id="stateIn" placeholder="State" maxlength="2" style="text-transform:uppercase">
+      <div class="segrow" id="geoRow"></div>
+    </div>
+
+    <label class="lbl">Certifications (tap all that apply)</label>
+    <div class="segrow" id="certRow"></div>
+    <div class="mini">Minority/Women/Disadvantaged Business Enterprise, veteran-owned, and federal small-business certifications open set-aside doors.</div>
+
+    <button id="runBtn">Find my fit &rarr;</button>
+    <p class="mini" style="margin-top:10px">Educational guidance from general program patterns &mdash; not a guarantee of funding or eligibility. Programs change; verify with each funder. Nothing you enter leaves this device.</p>
+  </div>
+
+  <div id="out"><div id="results"></div></div>
+</div>
+
+<footer><span class="np">GrantFit &middot; a <a href="https://nesoai.github.io/mallory/" target="_blank" rel="noopener">Boundless</a> tool &middot; v1.0 &middot; &copy; 2026 Boundless / Mallory Bailey-Finkley &mdash; all rights reserved &middot; </span>Educational guidance only. Verify eligibility with each funder. Sister tools: <a href="https://nesoai.github.io/planforge/">PlanForge</a> + <a href="https://nesoai.github.io/marketscope/">MarketScope</a>.</footer>
+<div id="modal"><div id="mcard"><button class="closex" id="mClose">&times;</button><h2 id="mTitle"></h2><div id="mBody"></div></div></div>
+<div id="toast"></div>
+<div id="tourCard" role="dialog" aria-label="Guided tour">
+  <div class="tstep" id="tourStep"></div>
+  <div class="ttext" id="tourText"></div>
+  <div class="tbtns"><button id="tourSkip">Skip</button><button class="pri" id="tourNext">Next</button></div>
+</div>
+
+<script>
+/* ============ GRANTFIT v1.0 ============ */
+const BUY_URL="mailto:nesoai.us@gmail.com?subject="+encodeURIComponent("Requesting GrantFit Pro ($19)")+"&body="+encodeURIComponent("Hi Boundless — I'd like GrantFit Pro. Please send my unlock code and how to pay."); // ← swap for Gumroad when live
+const PRICE_TXT="$19 one-time";
+const NESO_CTA="https://tally.so/r/q4MLYg?track=biz&services="+encodeURIComponent("Grant Writing & Funding (Standard)")+"&credits=8&source=grantfit";
+const OPPS_URL="https://nesoai.github.io/neso/#/opportunities";
+
+const $=id=>document.getElementById(id);
+const KEY='grantfit.v1';
+let S=Object.assign({pro:false},(()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}})());
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function toast(t){const x=$('toast');x.textContent=t;x.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>x.classList.remove('on'),2600)}
+
+/* ---- selectors ---- */
+const ORGS=[['np','&#127970; Nonprofit (501c3)'],['fp','&#128188; Small business'],['su','&#128640; Startup (innovation)'],['gov','&#127963; Municipality / Tribe'],['ind','&#128100; Individual / sole prop']];
+const USES=[['prog','Programs & services'],['equip','Equipment / facilities'],['rd','R&D / product innovation'],['wc','Working capital / payroll'],['re','Real estate / construction'],['plan','Planning / study']];
+const AMTS=[['s','< $25k'],['m','$25k–$100k'],['l','$100k–$500k'],['xl','$500k+']];
+const AGES=[['pre','Pre-launch'],['young','< 2 years'],['est','2+ years']];
+const GEOS=[['urban','Urban / suburban'],['rural','Rural']];
+const CERTS=[['mwbe','MBE / WBE / DBE'],['vet','Veteran-owned'],['fed8a','8(a) / HUBZone'],['none','None yet']];
+let ORG='np', USE='prog', AMT='m', AGE='est', GEO='urban', CSEL=new Set(['none']);
+
+function segInit(rowId,items,get,set,multi){
+  $(rowId).innerHTML=items.map(x=>`<button class="seg ${multi?(get().has(x[0])?'on':''):(x[0]===get()?'on':'')}" data-v="${x[0]}">${x[1]}</button>`).join('');
+  $(rowId).querySelectorAll('.seg').forEach(b=>b.onclick=()=>{
+    if(multi){
+      const k=b.dataset.v, s=get();
+      if(k==='none'){ s.clear(); s.add('none'); }
+      else { s.delete('none'); s.has(k)?s.delete(k):s.add(k); if(!s.size)s.add('none'); }
+      $(rowId).querySelectorAll('.seg').forEach(x=>x.classList.toggle('on',s.has(x.dataset.v)));
+    } else {
+      set(b.dataset.v);
+      $(rowId).querySelectorAll('.seg').forEach(x=>x.classList.toggle('on',x===b));
+    }
+    run();
+  });
+}
+segInit('orgRow',ORGS,()=>ORG,v=>ORG=v);
+segInit('useRow',USES,()=>USE,v=>USE=v);
+segInit('amtRow',AMTS,()=>AMT,v=>AMT=v);
+segInit('ageRow',AGES,()=>AGE,v=>AGE=v);
+segInit('geoRow',GEOS,()=>GEO,v=>GEO=v);
+segInit('certRow',CERTS,()=>CSEL,null,true);
+$('stateIn').oninput=()=>run();
+$('runBtn').onclick=()=>{run();const r=$('results');if(r&&r.scrollIntoView)r.scrollIntoView({behavior:'smooth',block:'start'});};
+
+/* ---- channels & scoring ---- */
+const clamp=(n)=>Math.max(5,Math.min(95,Math.round(n)));
+const CH={
+ fed:{e:'&#127963;',n:'Federal competitive grants',
+  score(){let s={np:68,gov:85,fp:22,su:28,ind:8}[ORG];
+    if(USE==='wc')s-=40; if(USE==='rd')s+=8; if(USE==='plan'&&ORG==='gov')s+=10; if(USE==='re'&&(ORG==='gov'||ORG==='np'))s+=6; if(USE==='prog'&&(ORG==='np'||ORG==='gov'))s+=8;
+    if(AMT==='s')s-=12; if(AMT==='xl'&&(ORG==='gov'||ORG==='np'))s+=8;
+    if(AGE==='pre')s-=15; if(GEO==='rural')s+=8; return clamp(s);},
+  why(){const w=[];
+    if(ORG==='gov')w.push('Federal agencies fund local governments directly and through formula + competitive programs \u2014 you\u2019re the intended customer.');
+    else if(ORG==='np')w.push('Nonprofits are the primary grantee class for HHS, HUD, DOL, EPA, and USDA program dollars.');
+    else w.push('For-profits are rarely eligible for straight federal grants outside innovation programs \u2014 most \u201cbusiness grants\u201d headlines are loans or tax credits.');
+    if(GEO==='rural')w.push('Rural location opens USDA Rural Development programs most applicants can\u2019t touch.');
+    if(USE==='wc')w.push('Almost no federal grant funds general working capital \u2014 requests must be project-shaped.');
+    else w.push('Project-shaped requests (a program, a facility, a study) match how federal notices are written.');
+    return w.slice(0,2);},
+  watch:'Long cycles (3\u20136+ months to award), real compliance/reporting burden, and reimbursement-based payment \u2014 you often front the cash.',
+  plays:['Register early: SAM.gov + UEI takes days-to-weeks and nothing moves without it.','Read the last award list for any program before writing \u2014 who actually wins tells you if you\u2019re the profile.','Build one strong \u201cboilerplate\u201d (org history, capacity, budget narrative) and reuse it across applications.']},
+ sbir:{e:'&#128300;',n:'SBIR / STTR (innovation R&D)',
+  score(){if(!((ORG==='su'||ORG==='fp')&&USE==='rd'))return clamp(8);
+    let s=80; if(AGE==='pre')s-=8; if(AMT==='xl')s-=5; return clamp(s);},
+  why(){return USE==='rd'&&(ORG==='su'||ORG==='fp')?
+    ['SBIR/STTR is the one large federal channel built for for-profit small businesses \u2014 non-dilutive R&D money across 11 agencies.','Phase I awards (~$50\u2013$300k) fund feasibility; winning one makes Phase II (~$1M+) realistic.']:
+    ['SBIR/STTR only funds for-profit small businesses doing genuine R&D toward a commercial product \u2014 outside that, skip it.'];},
+  watch:'Highly competitive, agency-specific topics, and your project must match a posted solicitation \u2014 not the other way around.',
+  plays:['Pick the agency whose mission your tech serves (NSF and NIH are the most open-topic).','Talk to the program manager before writing \u2014 it\u2019s allowed and it\u2019s how winners calibrate.','Budget 6\u20138 weeks for a first Phase I proposal; recycled academic writing loses.']},
+ state:{e:'&#128506;',n:'State & local economic development',
+  score(){let s={np:55,gov:75,fp:68,su:58,ind:20}[ORG];
+    if(USE==='equip')s+=10; if(USE==='re')s+=14; if(USE==='wc')s-=18; if(USE==='rd')s+=4;
+    if(CSEL.has('mwbe')||CSEL.has('vet'))s+=6; if(AGE==='pre')s-=8; return clamp(s);},
+  why(){const w=['States and cities fund what creates local jobs and tax base \u2014 equipment, facilities, expansion, and training all qualify in most states.'];
+    if(CSEL.has('mwbe')||CSEL.has('vet'))w.push('Your certification unlocks set-aside and preference programs at the state and municipal level.');
+    else w.push('Programs vary wildly by state \u2014 the state commerce/economic-development department\u2019s site is the master list.');
+    return w;},
+  watch:'Much of it arrives as tax credits, fee waivers, or matching funds rather than a check \u2014 count it, but plan cash accordingly.',
+  plays:['Call the state economic-development office and ask what THEY want to fund this year \u2014 awards follow their priorities.','City/county programs are less competitive than state ones \u2014 start local.','Stack: a small local award is evidence that wins the bigger state award.']},
+ found:{e:'&#127873;',n:'Foundations & philanthropy',
+  score(){let s={np:85,gov:35,fp:10,su:14,ind:28}[ORG];
+    if(USE==='prog')s+=6; if(USE==='wc'&&ORG==='np')s-=8; if(USE==='rd')s-=6;
+    if(AGE==='pre')s-=12; return clamp(s);},
+  why(){return ORG==='np'?
+    ['Foundations exist to fund nonprofits \u2014 program grants, capacity building, and increasingly general operating support.','Local community foundations are the most accessible entry point and the best first \u201cyes\u201d.']:
+    (ORG==='ind'?['Individuals can access foundation money through a fiscal sponsor \u2014 an established nonprofit that umbrellas your project for a small fee.']:
+    ['Foundations almost never fund for-profits or governments directly \u2014 partner with a nonprofit if the work is charitable.']);},
+  watch:'Relationship-driven: cold applications convert poorly. Many foundations are invitation-only \u2014 the LOI and the phone call come first.',
+  plays:['Start with your community foundation and the funders already giving to organizations like yours (their 990s are public).','Send a 1-page letter of inquiry before any full proposal \u2014 it\u2019s expected and it saves months.','One program officer relationship is worth ten cold applications.']},
+ corp:{e:'&#127974;',n:'Corporate giving & sponsorships',
+  score(){let s={np:60,gov:30,fp:18,su:22,ind:26}[ORG];
+    if(USE==='prog')s+=6; if(AMT==='s'||AMT==='m')s+=6; if(AMT==='xl')s-=15; return clamp(s);},
+  why(){return ['Banks (CRA obligations), utilities, and hometown employers give locally and decide fast compared to foundations.','Best for visible, community-facing work at the $1k\u2013$50k scale \u2014 events, programs, sponsorable things.'];},
+  watch:'Checks are smaller and often tied to visibility \u2014 logos, events, employee volunteering. Plan the recognition before you ask.',
+  plays:['Banks near you have Community Reinvestment Act goals \u2014 ask for the CRA or community-relations officer by name.','Ask for a specific, sponsorable thing (\u201cthe fall cohort,\u201d \u201cthe equipment lab\u201d), not general support.','Renewal is the real prize: report impact fast and specifically after the first gift.']},
+ sba:{e:'&#127974;',n:'SBA & CDFI lending (not a grant \u2014 but often the real answer)',
+  score(){let s={np:32,gov:5,fp:80,su:62,ind:55}[ORG];
+    if(USE==='wc')s+=12; if(USE==='equip')s+=8; if(USE==='re')s+=8; if(AGE==='pre')s-=10; return clamp(s);},
+  why(){const w=[];
+    if(USE==='wc')w.push('Working capital is what lending is FOR \u2014 SBA 7(a), microloans, and CDFI loans fund exactly what grants won\u2019t.');
+    else w.push('SBA-backed and CDFI loans fund equipment, real estate, and growth at rates and terms retail banks won\u2019t offer young businesses.');
+    w.push('CDFIs (mission lenders) say yes to businesses banks decline \u2014 and many pair loans with free advisory help.');
+    return w;},
+  watch:'It\u2019s debt \u2014 it must be repaid. But \u201cno grants exist for this\u201d usually means \u201cthis is a lending use case,\u201d not \u201cno money exists.\u201d',
+  plays:['Find your nearest CDFI (the CDFI Fund locator lists them) \u2014 they\u2019re built for first-time borrowers.','SBA microloans (up to $50k) have the lightest requirements \u2014 right-sized for early needs.','A modest loan repaid on time is the credit history that unlocks everything later.']},
+ crowd:{e:'&#129309;',n:'Crowdfunding & community capital',
+  score(){let s={np:45,gov:8,fp:42,su:52,ind:58}[ORG];
+    if(AMT==='s')s+=14; if(AMT==='m')s+=4; if(AMT==='xl')s-=28;
+    if(USE==='prog'||USE==='equip')s+=4; return clamp(s);},
+  why(){return ['Works when you have an audience and a story \u2014 and doubles as market proof you can show every other funder on this list.','Best at the under-$50k scale: launches, equipment, a specific visible goal.'];},
+  watch:'It\u2019s a marketing campaign, not passive income \u2014 most successful raises are 4\u20136 weeks of full-time promotion with the first 30% pre-committed.',
+  plays:['Line up the first 30% from your own network before going public \u2014 momentum is the algorithm.','Pick the model that fits: rewards (Kickstarter-style) for products, donation for causes, community rounds for equity.','A successful raise is evidence \u2014 cite it in every grant and loan application after.']}
+};
+
+/* ---- render ---- */
+function run(){
+  const out=$('results');
+  const scored=Object.keys(CH).map(k=>({k,s:CH[k].score()})).sort((a,b)=>b.s-a.s);
+  const top=scored[0];
+  const st=($('stateIn').value||'').trim().toUpperCase();
+
+  /* verdict */
+  let vh, vp, ve='&#127919;';
+  if(USE==='wc'){
+    ve='&#128161;';
+    vh='Honest read: grants rarely fund working capital.';
+    vp='Payroll and general operations are what lending and revenue are for \u2014 which is why '+CH[top.k].n+' leads your list. Reshape the request into a project (a program, equipment, an expansion) and the grant channels reopen.';
+  } else if(top.s>=70){
+    vh='Strong fit: '+CH[top.k].n+' should lead.';
+    vp='Your profile is what this channel is built to fund. Work the top two channels in parallel \u2014 the second is your hedge against the first\u2019s timeline.';
+  } else if(top.s>=50){
+    vh='Workable fit \u2014 with positioning.';
+    vp=CH[top.k].n+' is your best channel, but you\u2019ll be competing against more natural fits. The \u201cwhy\u201d and \u201cwatch-outs\u201d below are where the positioning work lives.';
+  } else {
+    ve='&#9888;&#65039;';
+    vh='Honest read: traditional grants are a long shot for this profile.';
+    vp='That\u2019s not a dead end \u2014 it means the fastest money is probably in the lending, local, or community channels below, and grant-readiness (age, track record, project shape) is what to build toward.';
+  }
+
+  /* channel cards */
+  const freeCount=3;
+  const cards=scored.map((x,i)=>{
+    const c=CH[x.k];
+    const locked=!S.pro&&i>=freeCount;
+    if(locked) return '';
+    const whys=c.why().map(w=>`<li>${w}</li>`).join('');
+    const plays=S.pro?c.plays:c.plays.slice(0,1);
+    return `<div class="chan">
+      <div class="ch-top"><span class="ch-e">${c.e}</span><h4>${i+1}. ${c.n}</h4><span class="score">${x.s}</span></div>
+      <div class="bar"><i style="width:${x.s}%"></i></div>
+      <ul>${whys}</ul>
+      <div class="watch">&#9888; ${c.watch}</div>
+      ${plays.map((p,j)=>`<div class="play"><b>Move ${j+1}:</b> ${p}</div>`).join('')}
+      ${!S.pro&&c.plays.length>1?`<div class="mini" style="margin-top:7px">&#128274; ${c.plays.length-1} more moves in Pro</div>`:''}
+    </div>`;
+  }).join('');
+
+  const lockedList=!S.pro?`<div class="lockedsec"><b>&#128274; ${scored.length-freeCount} more channels scored for you:</b> ${scored.slice(freeCount).map(x=>CH[x.k].n+' ('+x.s+')').join(' \u00b7 ')} &mdash; plus every channel\u2019s full playbook and the grant-readiness checklist. <button class="lockbtn" onclick="openPro()">Unlock &mdash; ${PRICE_TXT}</button></div>`:'';
+
+  /* pro: readiness checklist */
+  const checklist=S.pro?`<div class="checklist"><h4>Grant-readiness checklist &mdash; what funders verify</h4>
+    ${[
+     'Legal status documented (IRS letter / registration / good standing)',
+     'SAM.gov + UEI registration active (federal) or state vendor registration (state)',
+     'A board list or leadership bios funders can look up',
+     'Last budget or financials, even simple ones \u2014 and a project budget',
+     'One page of outcomes: who you served, what changed, in numbers',
+     'The project described as a project: need \u2192 activity \u2192 outcome \u2192 cost',
+     'Two letters of support lined up (partner org, official, or customer)',
+     'A bank account and bookkeeping that can survive a funder\u2019s look'
+    ].map(x=>`<label><input type="checkbox">${x}</label>`).join('')}
+    <p class="mini" style="margin-top:8px">Every unchecked box is a faster win than another application \u2014 readiness is scored before merit.</p></div>`:'';
+
+  out.innerHTML=`
+    <div class="verdict"><div class="vbig">${ve}</div><div><h3>${vh}</h3><p>${vp}</p></div></div>
+    ${cards}
+    ${lockedList}
+    ${checklist}
+    <div class="rowbtns">
+      <a class="smallbtn" href="${OPPS_URL}" target="_blank" rel="noopener" style="text-decoration:none">&#128269; Browse live opportunities${st?(' near '+st):''}</a>
+      <button class="smallbtn" id="printBtn">&#128424; Print my funding roadmap ${S.pro?'':'&#128274;'}</button>
+    </div>
+    <div class="cta-neso"><p><b>Want the applications written for you?</b> NESO finds the specific programs that fit this profile, checks eligibility, and writes the funder-ready package \u2014 narrative, budget, and attachments.</p><a href="${NESO_CTA}" target="_blank" rel="noopener">Have NESO find &amp; write it &rarr;</a></div>`;
+
+  $('printBtn').onclick=()=>{ if(!S.pro) return openPro('The printable funding roadmap is a Pro feature:'); window.print(); };
+}
+
+/* ============ EXAMPLE ============ */
+function loadExample(){
+  ORG='np'; USE='prog'; AMT='m'; AGE='young'; GEO='urban'; CSEL=new Set(['none']);
+  $('stateIn').value='RI';
+  [['orgRow',ORG],['useRow',USE],['amtRow',AMT],['ageRow',AGE],['geoRow',GEO]].forEach(([r,v])=>{
+    $(r).querySelectorAll('.seg').forEach(x=>x.classList.toggle('on',x.dataset.v===v));
+  });
+  $('certRow').querySelectorAll('.seg').forEach(x=>x.classList.toggle('on',CSEL.has(x.dataset.v)));
+  run();
+  $('exBanner').style.display='block';
+  toast('Example loaded \u2014 tap your own answers anytime');
+  try{ if(typeof gtag==='function') gtag('event','example_load',{tool:'grantfit'}); }catch(e){}
+}
+$('exBtn').onclick=loadExample;
+
+/* ============ PRO ============ */
+const REDEEM_URL='https://neso-pro.nesoai-us.workers.dev/redeem'; // <- update after deploying neso-pro-worker.js
+async function redeemCode(c){
+  c=(c||'').trim().toUpperCase();
+  if(!/^GFT-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(c)) return {ok:false,msg:'That code doesn\u2019t look right'};
+  try{
+    const r=await fetch(REDEEM_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tool:'grantfit',code:c})});
+    const j=await r.json();
+    if(j.ok) return {ok:true};
+    if(j.reason==='used') return {ok:false,msg:'That code has already been used'};
+    return {ok:false,msg:'That code doesn\u2019t look right'};
+  }catch(e){ return {ok:false,msg:'Couldn\u2019t reach the unlock server \u2014 check your connection and try again'}; }
+}
+function openModal(t,b){$('mTitle').textContent=t;$('mBody').innerHTML=b;$('modal').classList.add('on');}
+$('mClose').onclick=()=>$('modal').classList.remove('on');
+$('modal').onclick=e=>{if(e.target.id==='modal')$('modal').classList.remove('on');};
+function openPro(msg){
+  openModal('GrantFit Pro',`<p>${msg||'One unlock, yours forever on this device:'}</p>
+   <ul style="color:var(--dim);font-size:13.5px;line-height:1.9;padding-left:18px;margin:8px 0 14px">
+     <li>All seven channels scored (free shows your top 3)</li>
+     <li>The full playbook &mdash; every move for every channel</li>
+     <li>The grant-readiness checklist funders score you on</li>
+     <li>Printable funding roadmap</li></ul>
+   <a class="lockbtn" href="${BUY_URL}" target="_blank" rel="noopener">Request Pro &mdash; ${PRICE_TXT} &rarr;</a>
+   <div style="display:flex;gap:8px;align-items:center;margin-top:14px">
+     <input class="tin" id="codeIn" placeholder="GFT-XXXX-XXXX" style="flex:1">
+     <button class="lockbtn" id="applyCode" style="background:var(--green);color:#04211a;margin:0">Apply</button></div>`);
+  $('applyCode').onclick=async()=>{const b=$('applyCode');b.disabled=true;b.textContent='\u2026';
+    const r=await redeemCode($('codeIn').value);b.disabled=false;b.textContent='Apply';
+    if(r.ok){S.pro=true;save();proUI();$('modal').classList.remove('on');toast('\ud83c\udf89 Pro unlocked');run();}
+    else toast(r.msg);};
+}
+function proUI(){$('proBtn').textContent=S.pro?'\u2713 Pro':'Go Pro';$('proBtn').className='pill '+(S.pro?'prodone':'pro');}
+$('proBtn').onclick=()=>S.pro?toast('Pro is active on this device \u2713'):openPro();
+
+/* ============ GUIDED TOUR ============ */
+const TOUR=[
+ ['orgRow','Step 1 of 5','Start with <b>who you are</b> \u2014 it\u2019s the single biggest filter. Whole channels open or close on organization type alone.'],
+ ['useRow','Step 2 of 5','<b>What the money is for</b> matters as much as who you are. Working capital and program funding live in completely different channels.'],
+ ['certRow','Step 3 of 5','<b>Certifications are door-openers</b> \u2014 MBE/WBE, veteran, and federal small-business status unlock set-asides most applicants never see.'],
+ ['out','Step 4 of 5','Your <b>fit scores, ranked</b> \u2014 why each channel fits, what to watch out for, and the first move. Honest reads included: sometimes the answer is a loan, not a grant.'],
+ ['exBtn','Step 5 of 5','Fastest way to learn it: <b>load the example</b>, then flip one answer at a time and watch the ranking change. Nothing is saved anywhere but this device.']
+];
+let tourI=-1;
+function tourClear(){document.querySelectorAll('.tourhl').forEach(e=>e.classList.remove('tourhl'));}
+function tourShow(i){
+  tourClear();
+  if(i>=TOUR.length){ $('tourCard').classList.remove('on'); try{localStorage.setItem('grantfit.tour','done')}catch(e){}; return; }
+  tourI=i; const [id,st,tx]=TOUR[i];
+  const el=$(id); if(el){ el.classList.add('tourhl'); el.scrollIntoView({behavior:'smooth',block:'center'}); }
+  $('tourStep').textContent=st; $('tourText').innerHTML=tx;
+  $('tourNext').textContent = i===TOUR.length-1 ? 'Done' : 'Next';
+  $('tourCard').classList.add('on');
+}
+$('tourNext').onclick=()=>tourShow(tourI+1);
+$('tourSkip').onclick=()=>tourShow(TOUR.length);
+$('tourBtn').onclick=()=>tourShow(0);
+setTimeout(()=>{ try{ if(!localStorage.getItem('grantfit.tour')) tourShow(0); }catch(e){} },1100);
+
+proUI(); run();
+</script>
+</body></html>
