@@ -6,19 +6,19 @@
 <title>GrantFit — which funding actually fits you?</title>
 <meta name="description" content="GrantFit scores seven funding channels — federal grants, SBIR, state programs, foundations, corporate giving, SBA/CDFI lending, crowdfunding — against your organization and tells you where your odds are real. Free, in your browser.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230d1117'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23fb923c' stroke-width='2.6'/%3E%3Ccircle cx='16' cy='16' r='3.4' fill='%23eab308'/%3E%3C/svg%3E">
-<meta name="theme-color" content="#0d1117">
+<meta name="theme-color" content="#f7f5f0">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script>
 const GA_ID="";
 if(GA_ID){const s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id='+GA_ID;document.head.appendChild(s);window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config',GA_ID);}
 </script>
 <style>
-:root{--bg:#0d1117;--panel:#11161d;--card:#161d26;--line:#232f3d;--ink:#e9eef4;--dim:#96a6b6;--faint:#5e7080;
+:root{--bg:#f7f5f0;--panel:#ffffff;--card:#ffffff;--line:#e4ded3;--ink:#20242b;--dim:#5c6672;--faint:#94a0ad;
 --orange:#fb923c;--gold:#eab308;--green:#34d399;--sky:#38bdf8;--bad:#f87171}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;font-size:14.5px;line-height:1.55;-webkit-font-smoothing:antialiased}
 a{color:var(--sky)}
-header{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(13,17,23,.92);backdrop-filter:blur(8px);z-index:50}
+header{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(247,245,240,.92);backdrop-filter:blur(8px);z-index:50}
 #logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17px;letter-spacing:-.01em}
 #logo b{color:var(--orange)}
 .hsp{flex:1}
@@ -39,7 +39,7 @@ header{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:
 @media(max-width:700px){.flow{flex-direction:column;gap:6px}.flow .farrow{transform:rotate(90deg);align-self:center;padding:0}}
 #app{display:grid;grid-template-columns:390px 1fr;gap:22px;max-width:1180px;margin:22px auto 60px;padding:0 16px}
 @media(max-width:900px){#app{grid-template-columns:1fr}}
-#inputs{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;height:fit-content}
+#inputs{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;height:fit-content;box-shadow:0 1px 3px rgba(20,30,40,.05)}
 .lbl{display:block;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);margin:16px 0 7px}
 .lbl:first-of-type{margin-top:0}
 .tin{width:100%;background:var(--card);border:1px solid var(--line);border-radius:9px;color:var(--ink);padding:10px 12px;font-size:14px;font-family:inherit}
@@ -166,7 +166,7 @@ footer{border-top:1px solid var(--line);padding:20px 18px;font-size:12px;color:v
   <div id="out"><div id="results"></div></div>
 </div>
 
-<footer><span class="np">GrantFit &middot; a <a href="https://nesoai.github.io/mallory/" target="_blank" rel="noopener">Boundless</a> tool &middot; v1.1 &middot; <a href="https://tally.so/r/rj1Z15?source=grantfit" target="_blank" rel="noopener">Feedback</a> &middot; &copy; 2026 Boundless / Mallory Bailey-Finkley &mdash; all rights reserved &middot; </span>Educational guidance only. Verify eligibility with each funder. Sister tools: <a href="https://nesoai.github.io/planforge/">PlanForge</a> + <a href="https://nesoai.github.io/marketscope/">MarketScope</a>.</footer>
+<footer><span class="np">GrantFit &middot; a <a href="https://nesoai.github.io/mallory/" target="_blank" rel="noopener">Boundless</a> tool &middot; v1.2 &middot; <a href="https://tally.so/r/rj1Z15?source=grantfit" target="_blank" rel="noopener">Feedback</a> &middot; &copy; 2026 Boundless / Mallory Bailey-Finkley &mdash; all rights reserved &middot; </span>Educational guidance only. Verify eligibility with each funder. Sister tools: <a href="https://nesoai.github.io/planforge/">PlanForge</a> + <a href="https://nesoai.github.io/marketscope/">MarketScope</a>.</footer>
 <div id="modal"><div id="mcard"><button class="closex" id="mClose">&times;</button><h2 id="mTitle"></h2><div id="mBody"></div></div></div>
 <div id="toast"></div>
 <div id="tourCard" role="dialog" aria-label="Guided tour">
@@ -177,7 +177,7 @@ footer{border-top:1px solid var(--line);padding:20px 18px;font-size:12px;color:v
 
 <script>
 /* ============ GRANTFIT v1.0 ============ */
-const BUY_URL="mailto:nesoai.us@gmail.com?subject="+encodeURIComponent("Requesting GrantFit Pro ($19)")+"&body="+encodeURIComponent("Hi Boundless — I'd like GrantFit Pro. Please send my unlock code and how to pay."); // ← swap for Gumroad when live
+const BUY_URL="https://nesoai.gumroad.com/l/wklryd"; // ← swap for Gumroad when live
 const PRICE_TXT="$19 one-time";
 const NESO_CTA="https://tally.so/r/q4MLYg?track=biz&services="+encodeURIComponent("Grant Writing & Funding (Standard)")+"&credits=8&source=grantfit";
 const OPPS_URL="https://nesoai.github.io/neso/#/opportunities";
