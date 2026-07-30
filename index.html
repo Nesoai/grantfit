@@ -72,6 +72,12 @@ header{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:
 .chan .watch{font-size:12.5px;color:var(--gold);margin-top:8px}
 .chan .play{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 12px;font-size:12.5px;color:var(--dim);margin-top:9px}
 .chan .play b{color:var(--ink)}
+.chan.lk{border-style:dashed;border-color:rgba(234,179,8,.42)}
+.chan.lk .plays-lk{position:relative;border-radius:9px;overflow:hidden;margin-top:9px}
+.chan.lk .plays-lk .play{filter:blur(3.5px);opacity:.5;pointer-events:none;user-select:none}
+.chan.lk .plays-lk .veil{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;
+  background:linear-gradient(180deg,rgba(13,17,23,0),rgba(13,17,23,.55));font-size:12px;color:var(--gold);font-weight:600;text-align:center;padding:0 10px}
+.chan.lk .veil button{background:var(--gold);color:#1a1206;border:0;border-radius:999px;padding:6px 14px;font-weight:700;font-size:11.5px;cursor:pointer;font-family:inherit}
 .lockedsec{background:rgba(234,179,8,.06);border:1px dashed rgba(234,179,8,.4);border-radius:11px;padding:13px 15px;font-size:13px;color:var(--dim);margin-bottom:16px}
 .lockedsec b{color:var(--gold)}
 .lockbtn{display:inline-block;border:none;border-radius:9px;background:var(--gold);color:#221a03;font-weight:700;font-size:12.5px;padding:8px 14px;cursor:pointer;font-family:inherit;text-decoration:none;margin-top:8px}
@@ -120,11 +126,21 @@ footer{border-top:1px solid var(--line);padding:20px 18px;font-size:12px;color:v
 #scrollTop.on{display:flex}
 #scrollTop:hover{filter:brightness(1.12)}
 @media print{#scrollTop{display:none!important}}
+
+/* "By NESO" byline — v2 house rule: every tool says whose it is, quietly, under
+   its own name. The tools are the top of NESO's funnel; a visitor who likes one
+   and cannot tell who made it is a lead lost to good work. */
+#logo{position:relative}
+#logo .byneso{display:block;font-family:Inter,system-ui,sans-serif;font-size:9.5px;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--faint,#8698aa);margin-top:1px}
+#logo .byneso a{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+#logo .byneso a:hover{color:var(--ink,#e9eef4);border-bottom-color:currentColor}
+#logo .lgwrap{display:flex;flex-direction:column;line-height:1.12}
 </style>
 </head>
 <body>
 <header>
-  <div id="logo"><svg width="25" height="25" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10" fill="none" stroke="#fb923c" stroke-width="2.6"/><circle cx="16" cy="16" r="3.6" fill="#eab308"/></svg> Grant<b>Fit</b></div>
+  <div id="logo"><svg width="25" height="25" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10" fill="none" stroke="#fb923c" stroke-width="2.6"/><circle cx="16" cy="16" r="3.6" fill="#eab308"/></svg><span class="lgwrap"><span>Grant<b>Fit</b></span><span class="byneso"><a href="https://nesohq.com/" target="_blank" rel="noopener">by NESO</a></span></span></div>
   <div class="hsp"></div>
   <button class="pill" id="tourBtn" title="Replay the 60-second tour">&#127891; Tour</button>
   <button class="pill pro" id="proBtn">Go Pro</button>
@@ -331,24 +347,38 @@ function run(){
   }
 
   /* channel cards */
+  /* v1.11: every scored channel renders. The old code returned '' for channels
+     4-7, so a free visitor saw three cards and a text list of names — the tool
+     whose promise is "seven channels scored for you" looked like a thin tool
+     rather than a locked one, and nobody pays to unlock something they were
+     never shown the shape of.
+
+     Free now sees the complete scored landscape: every channel, its real score,
+     its bar, why it scored that way, and what to watch. What Pro buys is the
+     MOVES — the part that is worth money and is genuinely additional. */
   const freeCount=3;
   const cards=scored.map((x,i)=>{
     const c=CH[x.k];
-    const locked=!S.pro&&i>=freeCount;
-    if(locked) return '';
+    const lk=!S.pro&&i>=freeCount;              /* moves hidden, analysis shown */
     const whys=c.why().map(w=>`<li>${w}</li>`).join('');
     const plays=S.pro?c.plays:c.plays.slice(0,1);
-    return `<div class="chan">
+    const playHTML=plays.map((p,j)=>`<div class="play"><b>Move ${j+1}:</b> ${p}</div>`).join('');
+    return `<div class="chan${lk?' lk':''}">
       <div class="ch-top"><span class="ch-e">${c.e}</span><h4>${i+1}. ${c.n}</h4><span class="score">${x.s}</span></div>
       <div class="bar"><i style="width:${x.s}%"></i></div>
       <ul>${whys}</ul>
       <div class="watch">&#9888; ${c.watch}</div>
-      ${plays.map((p,j)=>`<div class="play"><b>Move ${j+1}:</b> ${p}</div>`).join('')}
-      ${!S.pro&&c.plays.length>1?`<div class="mini" style="margin-top:7px">&#128274; ${c.plays.length-1} more moves in Pro</div>`:''}
+      ${lk
+        ? `<div class="plays-lk">${playHTML}<div class="veil"><span>&#128274; ${c.plays.length} move${c.plays.length===1?'':'s'} for this channel</span><button onclick="openPro()">Unlock &mdash; ${PRICE_TXT}</button></div></div>`
+        : playHTML + (!S.pro&&c.plays.length>1?`<div class="mini" style="margin-top:7px">&#128274; ${c.plays.length-1} more moves in Pro</div>`:'')}
     </div>`;
   }).join('');
 
-  const lockedList=!S.pro?`<div class="lockedsec"><b>&#128274; ${scored.length-freeCount} more channels scored for you:</b> ${scored.slice(freeCount).map(x=>CH[x.k].n+' ('+x.s+')').join(' \u00b7 ')} &mdash; plus every channel\u2019s full playbook and the grant-readiness checklist. <button class="lockbtn" onclick="openPro()">Unlock &mdash; ${PRICE_TXT}</button></div>`:'';
+  /* Every channel is on the page now, so this stops listing them back and says
+     what is actually still behind the price. */
+  const totalMoves=scored.reduce((a,x)=>a+CH[x.k].plays.length,0);
+  const shownMoves=scored.slice(0,freeCount).length;
+  const lockedList=!S.pro?`<div class="lockedsec"><b>&#128274; ${Math.max(0,totalMoves-shownMoves)} moves still locked</b> &mdash; every channel\u2019s full playbook, in the order to work them, plus the grant-readiness checklist funders score before merit. Your scores above are yours to keep either way. <button class="lockbtn" onclick="openPro()">Unlock &mdash; ${PRICE_TXT}</button></div>`:'';
 
   /* pro: readiness checklist */
   const checklist=S.pro?`<div class="checklist"><h4>Grant-readiness checklist &mdash; what funders verify</h4>
