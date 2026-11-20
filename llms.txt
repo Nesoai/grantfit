@@ -1,0 +1,35 @@
+# GrantFit
+
+> GrantFit scores seven funding channels — federal grants, SBIR, state programs, foundations, corporate giving, SBA/CDFI lending, crowdfunding — against your organization and tells you where your odds are real.
+
+GrantFit is a free web tool at https://grantfit.nesohq.com/. It runs in the browser with no account.
+It is for nonprofits, small businesses, schools and community organizations looking for funding.
+
+## Questions GrantFit answers
+
+- **How do I know which grants my organization actually qualifies for?** Eligibility is decided by four things: your entity type, where you operate, your annual budget, and whether the funder is chartered to pay for what you want to do.
+- **Are federal grants worth pursuing for a small nonprofit or business?** Sometimes, and less often than people assume.
+- **What is the difference between a grant, an SBIR award, and a CDFI loan?** A grant is money you do not repay but must spend as promised.
+- **How long does grant funding actually take to arrive?** Plan on three to nine months from application to money in the account for most federal and state programs, and six to twelve weeks for foundations.
+
+## Use it
+
+- [Open GrantFit](https://grantfit.nesohq.com/)
+
+## About NESO
+
+GrantFit is made by NESO HQ LLC, which offers advisory services, research reports and free tools for founders,
+small businesses, developers and municipalities: https://nesohq.com/ (its llms.txt: https://nesohq.com/llms.txt).
+Questions: hello@nesohq.com · (901) 295-0322.
+
+## Other free NESO tools
+
+- [MarketFit](https://marketfit.nesohq.com/)
+- [PlanForge](https://planforge.nesohq.com/)
+- [MarketScope](https://marketscope.nesohq.com/)
+- [CapStack](https://capstack.nesohq.com/)
+- [ProForma](https://proforma.nesohq.com/)
+- [SiteShaper](https://siteshaper.nesohq.com/)
+- [BuildBrief](https://buildbrief.nesohq.com/)
+- [Bird's Eye instant read](https://birdseye.nesohq.com/): a free first look at a parcel, with written reports quoted to scope.
+- [NESO for Contractors](https://contractors.nesohq.com/): free public bids and state-by-state guides for contractors.
